@@ -1,0 +1,2 @@
+npm install express-validator = untuk validasi di autentifikasi
+npm install bcrypt = untuk enskripsi saat ke MYSQL
