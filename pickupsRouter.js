@@ -7,12 +7,12 @@ router.post('/create', (req, res) => {
     const { user_id, waktu, lokasi, catatan } = req.body;
 
     // Validasi input
-    if (!user_id || !waktu || !lokasi || !catatan) {
+    if (!user_id || !waktu || !lokasi) {
         return res.status(400).json({ error: 'Semua field harus diisi' });
     }
     
-    const sql = "INSERT INTO pickups (user_id, waktu, lokasi, catatan) VALUES (?, ?, ?, ?)";
-    db.query(sql, [user_id, waktu, lokasi, catatan], (err, result) => {
+    const sql = "INSERT INTO pickups (user_id, waktu, lokasi) VALUES (?, ?, ?)";
+    db.query(sql, [user_id, waktu, lokasi], (err, result) => {
         if (err) {
             console.error('Error creating pickup:', err);
             return res.status(500).json({ error: 'Terjadi kesalahan saat menyimpan data penjemputan sampah' });

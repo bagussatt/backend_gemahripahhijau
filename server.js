@@ -16,10 +16,7 @@ app.use(bodyParser.json());
 // Serve static files from 'uploads' folder
 app.use('/uploads', express.static('uploads'));
 
-// Jumlah salt rounds untuk bcrypt
-const saltRounds = 10;
-
-// Middleware untuk menghandle CORS (jika diperlukan)
+// Middleware untuk menghandle CORS
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
@@ -33,36 +30,35 @@ app.use('/pickups', pickupRouter);
 app.use('/feedback', feedbackRouter);
 app.use('/complaints', complaintRouter);
 
-app.get('/user/:username', (req, res) => {
-  const { username } = req.params;
+app.get('/user/:nama', async (req, res) => {
+  try {
+    const { username } = req.params;
+    const sql = "SELECT * FROM users WHERE username = ?";
+    const [results] = await db.query(sql, [username]);
 
-  const sql = "SELECT * FROM users WHERE username = ?";
-  db.query(sql, [username], (err, results) => {
-    if (err) {
-      return res.status(500).json({ error: 'Terjadi kesalahan saat mengambil data pengguna' });
-    }
     if (results.length === 0) {
       return res.status(404).json({ error: 'Pengguna tidak ditemukan' });
     }
 
     res.status(200).json(results[0]);
-  });
+  } catch (err) {
+    console.error('Error fetching user data:', err);
+    res.status(500).json({ error: 'Terjadi kesalahan saat mengambil data pengguna' });
+  }
 });
 
-app.get('/:id', (req, res) => {
-  const { id } = req.params;
-
-  const sql = 'SELECT * FROM users WHERE id = ?';
-  db.query(sql, [id], (err, results) => {
-    if (err) {
-      return res.status(500).json({ error: 'Error retrieving user' });
-    }
+app.get('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const sql = 'SELECT * FROM users WHERE id = ?';
+    const [results] = await db.query(sql, [id]);
     if (results.length === 0) {
       return res.status(404).json({ error: 'User not found' });
     }
-
     res.status(200).json(results[0]);
-  });
+  } catch (err) {
+    res.status(500).json({ error: 'Error retrieving user' });
+  }
 });
 
 // Listen on port 3000
